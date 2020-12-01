@@ -1,0 +1,5 @@
+# Configuraciones generales - TEST
+
+logging:
+  level:
+    root: DEBUG

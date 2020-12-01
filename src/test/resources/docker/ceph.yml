@@ -1,0 +1,43 @@
+
+services:
+  ceph:
+    image: ceph/daemon
+    hostname: ceph
+    container_name: ceph
+    environment:
+      # - MON_IP=127.0.0.1
+      - MON_IP=${MON_IP:-127.0.0.1}
+      - CEPH_PUBLIC_NETWORK=${CEPH_PUBLIC_NETWORK:-0.0.0.0/0}
+      - CEPH_DAEMON=${CEPH_DAEMON:-demo}
+      - CEPH_DEMO_UID=${CEPH_DEMO_UID:-sandbox}
+      - CEPH_DEMO_ACCESS_KEY=${CEPH_DEMO_ACCESS_KEY:-sandboxKey}
+      - CEPH_DEMO_SECRET_KEY=${CEPH_DEMO_SECRET_KEY:-sandboxSecret}
+      # docker exec ceph s3cmd mb s3://sandbox-bk
+      - CEPH_DEMO_BUCKET=${CEPH_DEMO_BUCKET:-sandbox-bk}
+      # Default 8080
+      - RGW_FRONTEND_PORT=${CEPH_DOCKER_PORT:-9280}
+      # Default 100 GB | 10073741824 (10GB)
+      # - BLUESTORE_BLOCK_SIZE=10073741824
+    ports:
+      - ${CEPH_DOCKER_PORT:-9280}:9280
+      - ${CEPH_DOCKER_METRICS_PORT:-9283}:9283
+    volumes:
+      - var_lib_ceph:/var/lib/ceph
+      - etc_ceph:/etc/ceph
+    networks:
+      default:
+        ipv4_address: 172.240.49.25
+    # if there are problems creating bucket
+    # Solve create bucket bug :(
+    #entrypoint: 'bash -c "sed -i \"s/timeout 5/timeout 20/\" /opt/ceph-container/bin/demo.sh && /opt/ceph-container/bin/entrypoint.sh"'
+
+volumes:
+  var_lib_ceph: {}
+  etc_ceph: {}
+
+networks:
+  default:
+    # driver: bridge
+    ipam:
+      config:
+        - subnet: 172.240.49.6/24

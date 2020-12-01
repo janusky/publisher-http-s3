@@ -1,0 +1,77 @@
+server:
+  port: ${APP_PORT}
+  servlet:
+    contextPath: ${APP_CONTEXT:/}
+  ssl:
+    enabled: true
+    key-store-type: ${APP_KEY_STORE_TYPE}
+    key-store: ${APP_KEY_STORE_FILE}
+    key-store-password: ${APP_TRUST_STORE_PASSWORD}
+    trust-store-type: ${APP_TRUST_STORE_TYPE}
+    trust-store: ${APP_TRUST_STORE_FILE}
+    trust-store-password: ${APP_TRUST_STORE_PASSWORD}
+    client-auth: want
+app:
+  route:
+    api: ${APP_API}
+  # Ver si es necesario (ProxyHelper)
+  proxy:
+    host: my.proxy
+    port: 80
+  certificates-enable:
+          
+security:
+  headers:
+    hsts: NONE
+
+spring:
+  #main:
+  #  web-application-type: reactive
+  profiles:
+    active: prod
+  messages:
+    basename: i18n/messages
+    encoding: UTF-8
+  application:
+    name: publisher-http-s3
+  # Optional
+  webflux:
+    static-path-pattern: classpath:/static/**
+
+# Storage S3
+storage:
+  s3:
+    enabled: true
+    accessKey: ${APP_S3_ACCESS_KEY}
+    secretKey: ${APP_S3_SECRET_KEY}
+    bucket: ${APP_S3_BUCKET}
+    endpoint: ${APP_S3_ENDPOINT:ceph.localhost}
+    ssl:
+      enabled: true
+      key-store: ${APP_S3_KEY_STORE_FILE}
+      key-store-password: ${APP_S3_TRUST_STORE_PASSWORD}
+      trust-store: ${APP_S3_TRUST_STORE_FILE}
+      trust-store-password: ${APP_S3_TRUST_STORE_PASSWORD}
+
+# Actuator      
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  port: ${APP_MANAGEMENT_PORT:8091}
+  address: ${APP_MANAGEMENT_ADDRESS:127.0.0.1}
+  context-path: ${APP_MANAGEMENT_CONTEXT:/admin}
+  security:
+    enabled: false
+
+# https://www.baeldung.com/spring-boot-info-actuator-custom
+info:
+  app:
+    name: publisher-http-s3
+  environment: production
+  
+logging:
+  file: ${APP_LOGGING_FILE:logs/publisher-http-s3.log}
+  level:
+    root: INFO
